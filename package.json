@@ -54,7 +54,7 @@
         "@types/node": "^22.15.29",
         "axios": "^1.11.0",
         "glob": "^11.0.3",
-        "untildify": "^4.0.0"
+        "untildify": "^5.0.0"
     },
     "devDependencies": {
         "@biomejs/biome": "1.9.4",
