@@ -9,7 +9,7 @@
         "clean": "rm -rf lib/*",
         "coverage": "jest --coverage",
         "format": "yarn biome format --write .",
-        "package": "ncc build --source-map --license licenses.txt",
+        "package": "ncc build lib/Main.js --source-map --license licenses.txt",
         "test": "jest"
     },
     "repository": {
