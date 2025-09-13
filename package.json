@@ -52,7 +52,7 @@
         "@actions/core": "^1.11.1",
         "@actions/github": "^6.0.1",
         "@types/node": "^22.15.29",
-        "axios": "^1.11.0",
+        "axios": "^1.12.0",
         "glob": "^11.0.3",
         "untildify": "^4.0.0"
     },
