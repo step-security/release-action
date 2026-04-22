@@ -16,6 +16,13 @@ on:
         required: false
         type: string
         default: "yarn build && yarn package"  
+      mode:
+        description: "Run mode: cherry-pick or verify"
+        required: false
+        default: "cherry-pick"
+
+  pull_request:
+    types: [opened, synchronize, labeled]
 
 permissions:
   contents: write
@@ -25,6 +32,7 @@ permissions:
 
 jobs:
   cherry-pick:
+    if: github.event_name == 'workflow_dispatch' || contains(fromJson(toJson(github.event.pull_request.labels)).*.name, 'review-required')
     uses: step-security/reusable-workflows/.github/workflows/auto_cherry_pick.yaml@v1
     with:
       original-owner: "ncipollo"
@@ -32,3 +40,5 @@ jobs:
       base_branch: ${{ inputs.base_branch }}
       package_manager: "yarn"
       script: ${{ inputs.script || 'yarn build && yarn package' }}
+      mode: ${{ github.event_name == 'pull_request' && 'verify' || inputs.mode }}
+
