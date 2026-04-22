@@ -1,5 +1,5 @@
 import * as core from "@actions/core"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { CoreOutputs, type Outputs } from "../src/Outputs.js"
 import type { ReleaseData } from "../src/Releases.js"
 
