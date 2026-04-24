@@ -1,9 +1,9 @@
 import * as core from "@actions/core"
-import { Globber, FileGlobber } from "./Globber"
-import { Artifact } from "./Artifact"
-import untildify from "untildify"
-import { ArtifactPathValidator } from "./ArtifactPathValidator"
-import { PathNormalizer } from "./PathNormalizer"
+import { Globber, FileGlobber } from "./Globber.js"
+import { Artifact } from "./Artifact.js"
+import { expandTilde } from "./PathExpander.js"
+import { ArtifactPathValidator } from "./ArtifactPathValidator.js"
+import { PathNormalizer } from "./PathNormalizer.js"
 
 export interface ArtifactGlobber {
     globArtifactString(artifact: string, contentType: string, errorsFailBuild: boolean): Artifact[]
@@ -55,6 +55,6 @@ export class FileArtifactGlobber implements ArtifactGlobber {
     }
 
     private static expandPath(path: string): string {
-        return untildify(path)
+        return expandTilde(path)
     }
 }

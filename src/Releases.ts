@@ -1,7 +1,7 @@
-import type { GitHub } from "@actions/github/lib/utils"
+import * as github from "@actions/github"
 import type { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods"
 import type { OctokitResponse } from "@octokit/types"
-import type { Inputs } from "./Inputs"
+import type { Inputs } from "./Inputs.js"
 
 export type CreateReleaseResponse = RestEndpointMethodTypes["repos"]["createRelease"]["response"]
 export type ReleaseByTagResponse = RestEndpointMethodTypes["repos"]["getReleaseByTag"]["response"]
@@ -36,7 +36,7 @@ export interface Releases {
 
     getByTag(tag: string): Promise<ReleaseByTagResponse>
 
-    generateReleaseNotes(tag: string, previousTag?: string): Promise<GenerateReleaseNotesResponse>
+    generateReleaseNotes(tag: string, previousTag?: string, targetCommitish?: string): Promise<GenerateReleaseNotesResponse>
 
     listArtifactsForRelease(releaseId: number): Promise<ListReleaseAssetsResponseData>
 
@@ -65,10 +65,10 @@ export interface Releases {
 }
 
 export class GithubReleases implements Releases {
-    git: InstanceType<typeof GitHub>
+    git: ReturnType<typeof github.getOctokit>
     inputs: Inputs
 
-    constructor(inputs: Inputs, git: InstanceType<typeof GitHub>) {
+    constructor(inputs: Inputs, git: ReturnType<typeof github.getOctokit>) {
         this.inputs = inputs
         this.git = git
     }
@@ -106,7 +106,7 @@ export class GithubReleases implements Releases {
         })
     }
 
-    async generateReleaseNotes(tag: string, previousTag?: string): Promise<GenerateReleaseNotesResponse> {
+    async generateReleaseNotes(tag: string, previousTag?: string, targetCommitish?: string): Promise<GenerateReleaseNotesResponse> {
         const params: any = {
             owner: this.inputs.owner,
             repo: this.inputs.repo,
@@ -115,6 +115,10 @@ export class GithubReleases implements Releases {
 
         if (previousTag) {
             params.previous_tag_name = previousTag
+        }
+
+        if (targetCommitish) {
+            params.target_commitish = targetCommitish
         }
 
         return this.git.rest.repos.generateReleaseNotes(params)
