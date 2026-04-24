@@ -46754,6 +46754,7 @@ async function validateSubscription() {
         else {
             info("Timeout or API not reachable. Continuing to next step.");
         }
+        core.info("Timeout or API not reachable. Continuing to next step.")
     }
 }
 async function run() {
@@ -46780,7 +46781,7 @@ function createAction() {
     const artifactDestroyer = new GithubArtifactDestroyer(releases);
     return new Action(inputs, outputs, releases, uploader, artifactDestroyer, skipper);
 }
-run();
+run()
 
 
 //# sourceMappingURL=index.js.map

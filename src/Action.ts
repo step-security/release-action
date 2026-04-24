@@ -142,7 +142,10 @@ export class Action {
         await this.processReleaseArtifactsAndOutputs(releaseResponse, true)
     }
 
-    private async processReleaseArtifactsAndOutputs(releaseResponse: CreateOrUpdateReleaseResponse, wasCreated: boolean) {
+    private async processReleaseArtifactsAndOutputs(
+        releaseResponse: CreateOrUpdateReleaseResponse,
+        wasCreated: boolean
+    ) {
         const releaseData = releaseResponse.data
         const releaseId = releaseData.id
         const uploadUrl = releaseData.upload_url
@@ -187,9 +190,12 @@ export class Action {
         )
     }
 
-    private async combineBodyWithReleaseNotes(body: string | undefined, isUpdate: boolean): Promise<string | undefined> {
+    private async combineBodyWithReleaseNotes(
+        body: string | undefined,
+        isUpdate: boolean
+    ): Promise<string | undefined> {
         // Determine if we should generate release notes based on operation type
-        const shouldGenerateReleaseNotes = isUpdate 
+        const shouldGenerateReleaseNotes = isUpdate
             ? this.inputs.generateReleaseNotes && !this.inputs.omitBodyDuringUpdate
             : this.inputs.generateReleaseNotes
 
@@ -197,7 +203,11 @@ export class Action {
             return body
         }
 
-        const response = await this.releases.generateReleaseNotes(this.inputs.tag, this.inputs.generateReleaseNotesPreviousTag, this.inputs.commit)
+        const response = await this.releases.generateReleaseNotes(
+            this.inputs.tag,
+            this.inputs.generateReleaseNotesPreviousTag,
+            this.inputs.commit
+        )
         const releaseNotes = response.data.body
 
         if (!body || body.trim() === "") {
