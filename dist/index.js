@@ -46741,20 +46741,40 @@ const {
 
 
 
+
 async function validateSubscription() {
-    const API_URL = `https://agent.api.stepsecurity.io/v1/github/${process.env.GITHUB_REPOSITORY}/actions/subscription`;
+    const eventPath = process.env.GITHUB_EVENT_PATH;
+    let repoPrivate;
+    if (eventPath && external_fs_.existsSync(eventPath)) {
+        const eventData = JSON.parse(external_fs_.readFileSync(eventPath, "utf8"));
+        repoPrivate = eventData?.repository?.private;
+    }
+    const upstream = "ncipollo/release-action";
+    const action = process.env.GITHUB_ACTION_REPOSITORY;
+    const docsUrl = "https://docs.stepsecurity.io/actions/stepsecurity-maintained-actions";
+    info("");
+    info("\u001b[1;36mStepSecurity Maintained Action\u001b[0m");
+    info(`Secure drop-in replacement for ${upstream}`);
+    if (repoPrivate === false)
+        info("\u001b[32m\u2713 Free for public repositories\u001b[0m");
+    info(`\u001b[36mLearn more:\u001b[0m ${docsUrl}`);
+    info("");
+    if (repoPrivate === false)
+        return;
+    const serverUrl = process.env.GITHUB_SERVER_URL || "https://github.com";
+    const body = { action: action || "" };
+    if (serverUrl !== "https://github.com")
+        body.ghes_server = serverUrl;
     try {
-        await lib_axios.get(API_URL, { timeout: 3000 });
+        await lib_axios.post(`https://agent.api.stepsecurity.io/v1/github/${process.env.GITHUB_REPOSITORY}/actions/maintained-actions-subscription`, body, { timeout: 3000 });
     }
     catch (error) {
         if (axios_isAxiosError(error) && error.response?.status === 403) {
-            core_error("Subscription is not valid. Reach out to support@stepsecurity.io");
+            core_error(`\u001b[1;31mThis action requires a StepSecurity subscription for private repositories.\u001b[0m`);
+            core_error(`\u001b[31mLearn how to enable a subscription: ${docsUrl}\u001b[0m`);
             process.exit(1);
         }
-        else {
-            info("Timeout or API not reachable. Continuing to next step.");
-        }
-        core.info("Timeout or API not reachable. Continuing to next step.")
+        info("Timeout or API not reachable. Continuing to next step.");
     }
 }
 async function run() {
@@ -46781,7 +46801,7 @@ function createAction() {
     const artifactDestroyer = new GithubArtifactDestroyer(releases);
     return new Action(inputs, outputs, releases, uploader, artifactDestroyer, skipper);
 }
-run()
+run();
 
 
 //# sourceMappingURL=index.js.map
